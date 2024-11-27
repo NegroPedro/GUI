@@ -1,0 +1,54 @@
+-- Create a ScreenGui
+local player = game.Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ESP_GUI"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+-- Create a TextLabel for the logo
+local logoLabel = Instance.new("TextLabel")
+logoLabel.Size = UDim2.new(0, 200, 0, 50)
+logoLabel.Position = UDim2.new(0.5, -100, 0, 10)
+logoLabel.Text = "Made by MacT"
+logoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+logoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+logoLabel.TextScaled = true
+logoLabel.Parent = screenGui
+
+-- Create an ESP function
+local function createESP(player)
+    local espBox = Instance.new("BoxHandleAdornment")
+    espBox.Size = Vector3.new(4, 6, 2)
+    espBox.Adornee = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    espBox.ZIndex = 5
+    espBox.Color3 = Color3.new(1, 0, 0) -- Red color
+    espBox.Transparency = 0.5
+    espBox.AlwaysOnTop = true
+    espBox.Parent = workspace
+
+    -- Update the ESP position if the player moves
+    player.CharacterAdded:Connect(function(character)
+        espBox.Adornee = character:WaitForChild("HumanoidRootPart")
+    end)
+end
+
+-- Iterate through all players to apply ESP to them
+for _, plr in pairs(game.Players:GetPlayers()) do
+    if plr ~= player then
+        createESP(plr)
+    end
+end
+
+-- Listen for new players joining
+game.Players.PlayerAdded:Connect(function(newPlayer)
+    newPlayer.CharacterAdded:Connect(function()
+        createESP(newPlayer)
+    end)
+end)
+
+-- Listen for existing players joining
+game.Players.PlayerRemoving:Connect(function(leavingPlayer)
+    local adornment = workspace:FindFirstChild(leavingPlayer.Name .. "_ESP")
+    if adornment then
+        adornment:Destroy()
+    end
+end)
