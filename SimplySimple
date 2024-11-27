@@ -1,54 +1,53 @@
--- Create a ScreenGui
-local player = game.Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ESP_GUI"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local Logo = Instance.new("TextLabel")
+local ESPButton = Instance.new("TextButton")
+local ToggleESP = false
 
--- Create a TextLabel for the logo
-local logoLabel = Instance.new("TextLabel")
-logoLabel.Size = UDim2.new(0, 200, 0, 50)
-logoLabel.Position = UDim2.new(0.5, -100, 0, 10)
-logoLabel.Text = "Made by MacT"
-logoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-logoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-logoLabel.TextScaled = true
-logoLabel.Parent = screenGui
+-- Setting up the ScreenGui
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create an ESP function
-local function createESP(player)
-    local espBox = Instance.new("BoxHandleAdornment")
-    espBox.Size = Vector3.new(4, 6, 2)
-    espBox.Adornee = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-    espBox.ZIndex = 5
-    espBox.Color3 = Color3.new(1, 0, 0) -- Red color
-    espBox.Transparency = 0.5
-    espBox.AlwaysOnTop = true
-    espBox.Parent = workspace
+-- Setting up the Frame
+Frame.Size = UDim2.new(0, 300, 0, 300)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -150)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.Parent = ScreenGui
 
-    -- Update the ESP position if the player moves
-    player.CharacterAdded:Connect(function(character)
-        espBox.Adornee = character:WaitForChild("HumanoidRootPart")
-    end)
-end
+-- Setting up the Logo
+Logo.Size = UDim2.new(1, 0, 0, 50)
+Logo.Position = UDim2.new(0, 0, 0, 0)
+Logo.BackgroundTransparency = 1
+Logo.Text = "Made by MacT"
+Logo.TextColor3 = Color3.fromRGB(255, 255, 255)
+Logo.TextScaled = true
+Logo.Parent = Frame
 
--- Iterate through all players to apply ESP to them
-for _, plr in pairs(game.Players:GetPlayers()) do
-    if plr ~= player then
-        createESP(plr)
+-- Countdown to disappear the logo
+wait(5)
+Logo.Visible = false
+
+-- Setting up the ESP Button
+ESPButton.Size = UDim2.new(0, 200, 0, 50)
+ESPButton.Position = UDim2.new(0.5, -100, 0.5, -25)
+ESPButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+ESPButton.Text = "Toggle ESP"
+ESPButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ESPButton.Parent = Frame
+
+-- Function to toggle ESP (This is just a placeholder)
+local function toggleESP()
+    ToggleESP = not ToggleESP
+    if ToggleESP then
+        print("ESP Enabled") -- Replace with actual ESP enabling code
+        ESPButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Change button color to indicate enabled
+        ESPButton.Text = "ESP On"
+    else
+        print("ESP Disabled") -- Replace with actual ESP disabling code
+        ESPButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Change button color to indicate disabled
+        ESPButton.Text = "Toggle ESP"
     end
 end
 
--- Listen for new players joining
-game.Players.PlayerAdded:Connect(function(newPlayer)
-    newPlayer.CharacterAdded:Connect(function()
-        createESP(newPlayer)
-    end)
-end)
-
--- Listen for existing players joining
-game.Players.PlayerRemoving:Connect(function(leavingPlayer)
-    local adornment = workspace:FindFirstChild(leavingPlayer.Name .. "_ESP")
-    if adornment then
-        adornment:Destroy()
-    end
-end)
+-- Connecting the button click to the toggle function
+ESPButton.MouseButton1Click:Connect(toggleESP)
